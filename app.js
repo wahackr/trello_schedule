@@ -1,7 +1,7 @@
-var app_key = '';
 //get your token here: https://trello.com/app-key Token link
-var token = '';
-var request = require('request');
+var app_key = process.env.TRELLO_APP_KEY || "";
+var token = process.env.THELLO_TOKEN || "";
+
 var trello = require("./trello.js")(app_key, token);
 var fs = require("fs");
 var dateFormat = require('dateformat');
