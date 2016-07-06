@@ -1,4 +1,4 @@
-{
+module.exports = {
   "days": [
     {
       "dayofweek":"1",
@@ -116,4 +116,4 @@
       ]
     }
   ]
-}
+};
