@@ -15,10 +15,8 @@ function main() {
 
   var d = new Date();
   var w = d.getDay();
-  var l = schedule.days.length;
-  for (var i = 0; i < l; i++) {
-    if (schedule.days[i].dayofweek == w) {
-      s = schedule.days[i];
+  schedule.days.forEach(function(day) {
+    if (day.dayofweek == w) {
       createBoardOfTheDate(dateFormat(d, "yyyymmdd"), function(err, body){
         create_board_response = JSON.parse(body);
         board_id = create_board_response.id;
@@ -29,12 +27,11 @@ function main() {
           lists = get_board_response.lists;
           //console.log(lists);
           board_url = get_board_response.url;
-          var l = lists.length;
-          for (var j = 0; j < l; j++) {
-            if (lists[j].name == 'Todo') {
-              var list_id = lists[j].id;
+          lists.forEach(function(list) {
+            if (list.name == 'Todo') {
+              var list_id = list.id;
               var cardno = 0;
-              var promises = s.report.map(function(task) {
+              var promises = day.report.map(function(task) {
                 return new Promise(function(resolve, reject) {
                   var options = {
                     "name": task.account,
@@ -57,11 +54,11 @@ function main() {
                 sendEmail(email_to, 'Report Board created for ' + dateFormat(d, "yyyy-mm-dd"), cardno + " cards created to Todo list\r\n<br/>"+board_url);
               });
             }
-          }
+          });
         });
       });
     }
-  }
+  });
 }
 
 function createBoardOfTheDate(date, callback) {
