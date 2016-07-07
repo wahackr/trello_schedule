@@ -1,6 +1,6 @@
 FROM node:5.11
-COPY . /xmo_booking_system_approval_bot
-WORKDIR /xmo_booking_system_approval_bot
+COPY . /trello_report_schedule
+WORKDIR /trello_report_schedule
 RUN npm install
 RUN apt-get update \
     && apt-get install -y vim \

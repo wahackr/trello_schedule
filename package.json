@@ -1,14 +1,13 @@
 {
-  "name": "Trello Report Schedule",
+  "name": "TrelloReportSchedule",
   "version": "0.0.1",
   "private": true,
   "description": "Auto create cards for daily report schedule",
   "script": {},
   "dependencies": {
     "request": "latest",
-    "fs": "latest",
-    "dateFormat": "latest",
+    "dateformat": "latest",
     "nodemailer": "latest",
-    "path": "latest"
+    "request": "latest"
   }
 }
