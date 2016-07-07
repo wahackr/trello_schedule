@@ -17,13 +17,15 @@ function main() {
   var w = d.getDay();
   schedule.days.forEach(function(day) {
     if (day.dayofweek == w) {
-      createBoardOfTheDate(dateFormat(d, "yyyymmdd"), function(err, body){
-        create_board_response = JSON.parse(body);
+      createBoardOfTheDate(dateFormat(d, "yyyymmdd"), function(err, create_board_response){
+        if (err) {
+          console.error(err.message);
+          return;
+        }
         board_id = create_board_response.id;
         board_name = create_board_response.name;
         console.log("[" + d + "] Created board " + board_name + " with ID: " + board_id);
-        trello.getBoard(board_id, function(err, body) {
-          get_board_response = JSON.parse(body);
+        trello.getBoard(board_id).then(function(get_board_response) {
           lists = get_board_response.lists;
           //console.log(lists);
           board_url = get_board_response.url;
@@ -39,14 +41,14 @@ function main() {
                     "due":dateFormat(d, "yyyy-mm-dd") + " 6:00",
                     "idList":list_id
                   }
-                  trello.createCard(options, function(err, body) {
-                    if (err) {
-                      return reject(body);
-                    } else {
+                  trello.createCard(options)
+                    .then(function(body) {
                       cardno++;
                       return resolve(body);
-                    }
-                  });
+                    })
+                    .catch(function(err) {
+                      return reject(err);
+                    });
                 });
               });
               Promise.all(promises).then(function(values) {
@@ -68,7 +70,13 @@ function createBoardOfTheDate(date, callback) {
     "idBoardSource":template_board_id,
     "prefs_permissionLevel":"org"
   }
-  trello.clone(options, callback);
+  trello.clone(options)
+    .then(function(json) {
+      callback(null, json);
+    })
+    .catch(function(err) {
+      callback(err);
+    });
 }
 
 function sendEmail(recipents, subject, body) {

@@ -1,39 +1,32 @@
-var request = require('request');
+var request = require('superagent');
 
 module.exports = function(app_key, token) {
 
-  function clone(options, callback) {
-    var endpoint = "https://api.trello.com/1/boards?key="+app_key+"&token="+token;
-
-    request({
-      uri: endpoint,
-      method: "POST",
-      formData: options
-    }, function(err, response, body) {
-      callback(err, body);
-    });
+  function clone(options) {
+    var newOptions = Object.assign({}, options, {key: app_key, token: token});
+    return request
+      .post("https://api.trello.com/1/boards")
+      .type("form")
+      .send(newOptions)
+      .then(function(res) { return res.body; });
   }
 
   function getBoard(board_id, callback) {
-    var endpoint = "https://api.trello.com/1/boards/"+board_id+"?lists=open&list_fields=name&fields=name,desc,url&key="+app_key+"&token="+token;
-
-    request({
-      uri: endpoint,
-      method: "GET"
-    }, function(err, response, body) {
-      callback(err, body);
-    });
+    request
+      .get("https://api.trello.com/1/boards/"+board_id)
+      .query({lists: "open", list_fields: "name", fields: "name,desc,url"})
+      .query({key: app_key, token: token})
+      .then(function(res) { return res.body; });
   }
 
   function createCard(options, callback) {
     var endpoint = "https://api.trello.com/1/cards?key="+app_key+"&token="+token;
-    request({
-      uri: endpoint,
-      method: "POST",
-      formData: options
-    }, function(err, response, body) {
-      callback(err, body);
-    });
+    var newOptions = Object.assign({}, options, {key: app_key, token: token});
+    request
+      .post("https://api.trello.com/1/cards")
+      .type("form")
+      .send(newOptions)
+      .then(function(res) { return res.body; });
   }
 
   return {
@@ -41,5 +34,5 @@ module.exports = function(app_key, token) {
     getBoard: getBoard,
     createCard: createCard
   };
-  
+
 };
