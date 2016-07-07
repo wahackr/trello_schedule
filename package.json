@@ -5,9 +5,8 @@
   "description": "Auto create cards for daily report schedule",
   "script": {},
   "dependencies": {
-    "request": "latest",
     "dateformat": "latest",
     "nodemailer": "latest",
-    "request": "latest"
+    "superagent": "^2.0.0"
   }
 }
