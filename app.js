@@ -12,34 +12,34 @@ var email_to = [
 ]
 
 function main() {
-
-  var d = new Date();
-  var w = d.getDay();
-  schedule.days.forEach(function(day) {
-    if (day.dayofweek == w) {
+  const d = new Date();
+  const w = d.getDay();
+  schedule.days
+    .filter((day) => +day.dayofweek === w)
+    .forEach(day => {
       createBoardOfTheDate(dateFormat(d, "yyyymmdd"), function(err, create_board_response){
         if (err) {
           console.error(err.message);
           return;
         }
-        board_id = create_board_response.id;
-        board_name = create_board_response.name;
+        const board_id = create_board_response.id;
+        const board_name = create_board_response.name;
         console.log("[" + d + "] Created board " + board_name + " with ID: " + board_id);
         trello.getBoard(board_id).then(function(get_board_response) {
           lists = get_board_response.lists;
           //console.log(lists);
           board_url = get_board_response.url;
-          lists.forEach(function(list) {
-            if (list.name == 'Todo') {
-              var list_id = list.id;
-              var cardno = 0;
-              var promises = day.report.map(function(task) {
+          lists
+            .filter(({name}) => name === 'Todo')
+            .forEach(function({id}) {
+              let cardno = 0;
+              const promises = day.report.map(function(task) {
                 return new Promise(function(resolve, reject) {
-                  var options = {
+                  const options = {
                     "name": task.account,
                     "desc": task.schedule + "\r\n" + task.type + "\r\nAM: " + task.am + "\r\nRemarks: " + task.remarks + "\r\nLead Time: " + task.time,
                     "due":dateFormat(d, "yyyy-mm-dd") + " 6:00",
-                    "idList":list_id
+                    "idList":id
                   }
                   trello.createCard(options)
                     .then(function(body) {
@@ -55,12 +55,10 @@ function main() {
                 console.log("Finish adding");
                 sendEmail(email_to, 'Report Board created for ' + dateFormat(d, "yyyy-mm-dd"), cardno + " cards created to Todo list\r\n<br/>"+board_url);
               });
-            }
+            });
           });
         });
       });
-    }
-  });
 }
 
 function createBoardOfTheDate(date, callback) {
@@ -96,4 +94,4 @@ function sendEmail(recipents, subject, body) {
   });
 }
 
-main();
+module.exports = main;
